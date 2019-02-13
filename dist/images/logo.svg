@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53 (72520) - https://sketchapp.com -->
+    <title>Abeer Zone Logo</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <radialGradient cx="48.6674533%" cy="51.7617715%" fx="48.6674533%" fy="51.7617715%" r="27.1324623%" id="radialGradient-1">
+            <stop stop-color="#8E8E8E" stop-opacity="0.0961265297" offset="0%"></stop>
+            <stop stop-color="#000000" stop-opacity="0.991531906" offset="100%"></stop>
+        </radialGradient>
+    </defs>
+    <g id="Abeer-Zone-Logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect fill="#000000" x="0" y="0" width="200" height="200"></rect>
+        <rect id="Rectangle" fill="url(#radialGradient-1)" x="0" y="0" width="200" height="200"></rect>
+        <g id="Group-18" transform="translate(10.000000, 10.000000)">
+            <polyline id="Path-4" stroke="#FFFFFF" stroke-width="7" points="82.0523697 175.832391 51.3560604 87.9161955 19.0544757 175.832391 0 175.832391 0 0 179.336523 0 179.336523 175.832391 98.189612 175.832391 148.297479 87.9161955 98.189612 87.9161955"></polyline>
+            <polygon id="Path-5" fill="#FFFFFF" points="78.1267614 175.057049 79.4136638 179.057049 86.9809762 179.057049 84.0401076 171.057049"></polygon>
+        </g>
+    </g>
+</svg>
