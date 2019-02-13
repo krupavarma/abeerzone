@@ -1638,7 +1638,7 @@ a.move-top span {
     }
     .baner-info-w3layouts {
         padding: 3em 0 0;
-        margin: 0 auto;
+        margin: 65px auto;
     }
     .feature-grids h3 {
         font-size: 0.9em;
@@ -1656,7 +1656,7 @@ a.move-top span {
     }
     .baner-info-w3layouts {
         padding: 3em 0 0;
-        margin: 0 auto;
+        margin: 65px auto;
     }
     .main-banner,
     .layer {
@@ -1679,7 +1679,7 @@ a.move-top span {
     }
     .baner-info-w3layouts {
         padding: 2.2em 0 0 0;
-        margin: 0 auto;
+        margin: 65px auto !important;
     }
 }
 
@@ -1847,7 +1847,7 @@ section#gallery {
   }
   
   .toggle:checked + .lbl-toggle + .collapsible-content {
-    max-height: 350px;
+    max-height: 590px;
   }
   
   .toggle:checked + .lbl-toggle {
@@ -1866,4 +1866,14 @@ section#gallery {
   .logo img{
       width: 100px !important;
   }
+}
+.gpay-button.long {
+    min-width: 134px;
+    width: 155px !important;
+}
+.gpay-button.black {
+    background-color: #000;
+    box-shadow: none;
+    padding: 8px 4px 10px !important;
+    /* color: #fff; */
 }

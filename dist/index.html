@@ -17,8 +17,239 @@
         function hideURLbar() {
             window.scrollTo(0, 1);
         }
-
+  /**
+         * Define the version of the Google Pay API referenced when creating your
+         * configuration
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#PaymentDataRequest|apiVersion in PaymentDataRequest}
+         */
+         const baseRequest = {
+          apiVersion: 2,
+          apiVersionMinor: 0
+        };
+        
+        /**
+         * Card networks supported by your site and your gateway
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#CardParameters|CardParameters}
+         * @todo confirm card networks supported by your site and gateway
+         */
+        const allowedCardNetworks = ["AMEX", "DISCOVER", "JCB", "MASTERCARD", "VISA"];
+        
+        /**
+         * Card authentication methods supported by your site and your gateway
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#CardParameters|CardParameters}
+         * @todo confirm your processor supports Android device tokens for your
+         * supported card networks
+         */
+        const allowedCardAuthMethods = ["PAN_ONLY", "CRYPTOGRAM_3DS"];
+        
+        /**
+         * Identify your gateway and your site's gateway merchant identifier
+         *
+         * The Google Pay API response will return an encrypted payment method capable
+         * of being charged by a supported gateway after payer authorization
+         *
+         * @todo check with your gateway on the parameters to pass
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#Gateway|PaymentMethodTokenizationSpecification}
+         */
+        const tokenizationSpecification = {
+          type: 'PAYMENT_GATEWAY',
+          parameters: {
+            'gateway': 'globalpayments',
+            'gatewayMerchantId': '12390613595660044262'
+          }
+        };
+        
+        /**
+         * Describe your site's support for the CARD payment method and its required
+         * fields
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#CardParameters|CardParameters}
+         */
+        const baseCardPaymentMethod = {
+          type: 'CARD',
+          parameters: {
+            allowedAuthMethods: allowedCardAuthMethods,
+            allowedCardNetworks: allowedCardNetworks
+          }
+        };
+        
+        /**
+         * Describe your site's support for the CARD payment method including optional
+         * fields
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#CardParameters|CardParameters}
+         */
+        const cardPaymentMethod = Object.assign(
+          {},
+          baseCardPaymentMethod,
+          {
+            tokenizationSpecification: tokenizationSpecification
+          }
+        );
+        
+        /**
+         * An initialized google.payments.api.PaymentsClient object or null if not yet set
+         *
+         * @see {@link getGooglePaymentsClient}
+         */
+        let paymentsClient = null;
+        
+        /**
+         * Configure your site's support for payment methods supported by the Google Pay
+         * API.
+         *
+         * Each member of allowedPaymentMethods should contain only the required fields,
+         * allowing reuse of this base request when determining a viewer's ability
+         * to pay and later requesting a supported payment method
+         *
+         * @returns {object} Google Pay API version, payment methods supported by the site
+         */
+        function getGoogleIsReadyToPayRequest() {
+          return Object.assign(
+              {},
+              baseRequest,
+              {
+                allowedPaymentMethods: [baseCardPaymentMethod]
+              }
+          );
+        }
+        
+        /**
+         * Configure support for the Google Pay API
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#PaymentDataRequest|PaymentDataRequest}
+         * @returns {object} PaymentDataRequest fields
+         */
+        function getGooglePaymentDataRequest() {
+          const paymentDataRequest = Object.assign({}, baseRequest);
+          paymentDataRequest.allowedPaymentMethods = [cardPaymentMethod];
+          paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
+          paymentDataRequest.merchantInfo = {
+            // @todo a merchant ID is available for a production environment after approval by Google
+            // See {@link https://developers.google.com/pay/api/web/guides/test-and-deploy/integration-checklist|Integration checklist}
+             merchantId: '12390613595660044262',
+            merchantName: 'Abeer Zone'
+          };
+          return paymentDataRequest;
+        }
+        
+        /**
+         * Return an active PaymentsClient or initialize
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/client#PaymentsClient|PaymentsClient constructor}
+         * @returns {google.payments.api.PaymentsClient} Google Pay API client
+         */
+        function getGooglePaymentsClient() {
+          if ( paymentsClient === null ) {
+            paymentsClient = new google.payments.api.PaymentsClient({environment: 'PRODUCTION'});
+          }
+          return paymentsClient;
+        }
+        
+        /**
+         * Initialize Google PaymentsClient after Google-hosted JavaScript has loaded
+         *
+         * Display a Google Pay payment button after confirmation of the viewer's
+         * ability to pay.
+         */
+        function onGooglePayLoaded() {
+          const paymentsClient = getGooglePaymentsClient();
+          paymentsClient.isReadyToPay(getGoogleIsReadyToPayRequest())
+              .then(function(response) {
+                if (response.result) {
+                  addGooglePayButton();
+                  // @todo prefetch payment data to improve performance after confirming site functionality
+                   prefetchGooglePaymentData();
+                }
+              })
+              .catch(function(err) {
+                // show error in developer console for debugging
+                console.error(err);
+              });
+        }
+        
+        /**
+         * Add a Google Pay purchase button alongside an existing checkout button
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#ButtonOptions|Button options}
+         * @see {@link https://developers.google.com/pay/api/web/guides/brand-guidelines|Google Pay brand guidelines}
+         */
+        function addGooglePayButton() {
+          const paymentsClient = getGooglePaymentsClient();
+          const button =
+              paymentsClient.createButton({onClick: onGooglePaymentButtonClicked});
+          document.getElementById('container').appendChild(button);
+        }
+        
+        /**
+         * Provide Google Pay API with a payment amount, currency, and amount status
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#TransactionInfo|TransactionInfo}
+         * @returns {object} transaction info, suitable for use as transactionInfo property of PaymentDataRequest
+         */
+        function getGoogleTransactionInfo() {
+          return {
+            currencyCode: 'INR',
+            totalPriceStatus: 'FINAL',
+            // set to cart total
+            totalPrice: '1'
+          };
+        }
+        
+        /**
+         * Prefetch payment data to improve performance
+         *
+         * @see {@link https://developers.google.com/pay/api/web/reference/client#prefetchPaymentData|prefetchPaymentData()}
+         */
+        function prefetchGooglePaymentData() {
+          const paymentDataRequest = getGooglePaymentDataRequest();
+          // transactionInfo must be set but does not affect cache
+          paymentDataRequest.transactionInfo = {
+            totalPriceStatus: 'NOT_CURRENTLY_KNOWN',
+            currencyCode: 'INR'
+          };
+          const paymentsClient = getGooglePaymentsClient();
+          paymentsClient.prefetchPaymentData(paymentDataRequest);
+        }
+        
+        /**
+         * Show Google Pay payment sheet when Google Pay payment button is clicked
+         */
+        function onGooglePaymentButtonClicked() {
+          const paymentDataRequest = getGooglePaymentDataRequest();
+          paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
+        
+          const paymentsClient = getGooglePaymentsClient();
+          paymentsClient.loadPaymentData(paymentDataRequest)
+              .then(function(paymentData) {
+                // handle the response
+                processPayment(paymentData);
+              })
+              .catch(function(err) {
+                // show error in developer console for debugging
+                console.error(err);
+              });
+        }
+        
+        /**
+         * Process payment data returned by the Google Pay API
+         *
+         * @param {object} paymentData response from Google Pay API after user approves payment
+         * @see {@link https://developers.google.com/pay/api/web/reference/object#PaymentData|PaymentData object reference}
+         */
+        function processPayment(paymentData) {
+          // show returned data in developer console for debugging
+            console.log(paymentData);
+          // @todo pass payment token to your gateway to process payment
+          paymentToken = paymentData.paymentMethodData.tokenizationData.token;
+        }
     </script>
+        <script async
+          src="https://pay.google.com/gp/p/js/pay.js"
+          onload="onGooglePayLoaded()"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-134422154-1"></script>
 <script>
@@ -195,8 +426,8 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                                      
                                     </ul>
                                     <div class="price-button mt-md-3 mt-2">
-                                        <a class="btn text-uppercase active" href="#contact">
-                                                        Buy Now</a>
+       
+                                            <div id="container" class="buy-btn btn text-uppercase active"></div>
                                     </div>
                                 </div>
                             </div>
@@ -270,31 +501,31 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
         <h3 class="title">ABEER'S QUOTES GALLERY</h3>
         <div class="row news-grids mt-lg-5 mt-4 text-center">
             <div class="col-md-4 gal-img">
-                <a href="#gal1"><img src="images/2.jpg" alt="news image" class="img-fluid"></a>
+                <a href="#gal1"><img src="images/Abeerzone_quote2.png" alt="news image" class="img-fluid"></a>
             </div>
             <div class="col-md-4 gal-img">
-                <a href="#gal2"><img src="images/3.jpg" alt="news image" class="img-fluid"></a>
+                <a href="#gal2"><img src="images/Abeerzone_quote3.png" alt="news image" class="img-fluid"></a>
             </div>
             <div class="col-md-4 gal-img">
-                <a href="#gal3"><img src="images/4.jpg" alt="news image" class="img-fluid"></a>
+                <a href="#gal3"><img src="images/Abeerzone_quote4.png" alt="news image" class="img-fluid"></a>
             </div>
             <div class="col-md-4 gal-img">
-                <a href="#gal4"><img src="images/5.jpg" alt="news image" class="img-fluid"></a>
+                <a href="#gal4"><img src="images/AbeerZone_quote13.png" alt="news image" class="img-fluid"></a>
             </div>
             <div class="col-md-4 gal-img">
-                <a href="#gal5"><img src="images/6.jpg" alt="news image" class="img-fluid"></a>
+                <a href="#gal5"><img src="images/AbeerZone_quote5.png" alt="news image" class="img-fluid"></a>
             </div>
             <div class="col-md-4 gal-img">
-                <a href="#gal6"><img src="images/7.jpg" alt="news image" class="img-fluid"></a>
+                <a href="#gal6"><img src="images/AbeerZone_quote6.png" alt="news image" class="img-fluid"></a>
             </div>
             <div class="col-md-4 gal-img">
-                <a href="#gal7"><img src="images/8.jpg" alt="news image" class="img-fluid"></a>
+                <a href="#gal7"><img src="images/AbeerZone_quote17.png" alt="news image" class="img-fluid"></a>
             </div>
             <div class="col-md-4 gal-img">
-                <a href="#gal8"><img src="images/9.jpg" alt="news image" class="img-fluid"></a>
+                <a href="#gal8"><img src="images/AbeerZone_quote14.png" alt="news image" class="img-fluid"></a>
             </div>
             <div class="col-md-4 gal-img">
-                <a href="#gal9"><img src="images/1.jpg" alt="news image" class="img-fluid"></a>
+                <a href="#gal9"><img src="images/AbeerZone_quote9.png" alt="news image" class="img-fluid"></a>
             </div>
             <div class="wrap-collabsible" style="width:100%">
                     <input id="collapsible" class="toggle" type="checkbox">
@@ -303,13 +534,25 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                       <div class="content-inner">
                             <div class="row news-grids mt-lg-5 mt-4 text-center">
                             <div class="col-md-4 gal-img">
-                                    <a href="#gal7"><img src="images/8.jpg" alt="news image" class="img-fluid"></a>
+                                    <a href="#gal10"><img src="images/AbeerZone_quote10.png" alt="news image" class="img-fluid"></a>
                                 </div>
                                 <div class="col-md-4 gal-img">
-                                    <a href="#gal8"><img src="images/9.jpg" alt="news image" class="img-fluid"></a>
+                                    <a href="#gal11"><img src="images/AbeerZone_quote11.png" alt="news image" class="img-fluid"></a>
                                 </div>
                                 <div class="col-md-4 gal-img">
-                                    <a href="#gal9"><img src="images/1.jpg" alt="news image" class="img-fluid"></a>
+                                    <a href="#gal12"><img src="images/AbeerZone_quote12.png" alt="news image" class="img-fluid"></a>
+                                </div>
+                                <div class="col-md-4 gal-img">
+                                    <a href="#gal13"><img src="images/AbeerZone_quote16.png" alt="news image" class="img-fluid"></a>
+                                </div>
+                                <div class="col-md-4 gal-img">
+                                    <a href="#gal14"><img src="images/AbeerZone_quote17.png" alt="news image" class="img-fluid"></a>
+                                </div>
+                                <div class="col-md-4 gal-img">
+                                    <a href="#gal15"><img src="images/AbeerZone_quote18.png" alt="news image" class="img-fluid"></a>
+                                </div>
+                                <div class="col-md-4 gal-img">
+                                    <a href="#gal16"><img src="images/AbeerZone_quote19.png" alt="news image" class="img-fluid"></a>
                                 </div>
                                 </div>
                       </div>
@@ -321,8 +564,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
     <!-- popup-->
     <div id="gal1" class="pop-overlay animate">
         <div class="popup">
-            <img src="images/2.jpg" alt="Popup Image" class="img-fluid" />
-            <p class="mt-4">Nulla viverra pharetra se, eget pulvinar neque pharetra ac int. placerat placerat dolor.</p>
+            <img src="images/Abeerzone_quote2.png" alt="Popup Image" class="img-fluid" />
             <a class="close" href="#gallery">&times;</a>
         </div>
     </div>
@@ -331,8 +573,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
     <!-- popup-->
     <div id="gal2" class="pop-overlay animate">
         <div class="popup">
-            <img src="images/3.jpg" alt="Popup Image" class="img-fluid" />
-            <p class="mt-4">Nulla viverra pharetra se, eget pulvinar neque pharetra ac int. placerat placerat dolor.</p>
+            <img src="images/Abeerzone_quote3.png" alt="Popup Image" class="img-fluid" />
             <a class="close" href="#gallery">&times;</a>
         </div>
     </div>
@@ -340,8 +581,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
     <!-- popup-->
     <div id="gal3" class="pop-overlay animate">
         <div class="popup">
-            <img src="images/4.jpg" alt="Popup Image" class="img-fluid" />
-            <p class="mt-4">Nulla viverra pharetra se, eget pulvinar neque pharetra ac int. placerat placerat dolor.</p>
+            <img src="images/Abeerzone_quote4.png" alt="Popup Image" class="img-fluid" />
             <a class="close" href="#gallery">&times;</a>
         </div>
     </div>
@@ -349,8 +589,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
     <!-- popup-->
     <div id="gal4" class="pop-overlay animate">
         <div class="popup">
-            <img src="images/5.jpg" alt="Popup Image" class="img-fluid" />
-            <p class="mt-4">Nulla viverra pharetra se, eget pulvinar neque pharetra ac int. placerat placerat dolor.</p>
+            <img src="images/AbeerZone_quote13.png" alt="Popup Image" class="img-fluid" />
             <a class="close" href="#gallery">&times;</a>
         </div>
     </div>
@@ -358,8 +597,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
     <!-- popup-->
     <div id="gal5" class="pop-overlay animate">
         <div class="popup">
-            <img src="images/6.jpg" alt="Popup Image" class="img-fluid" />
-            <p class="mt-4">Nulla viverra pharetra se, eget pulvinar neque pharetra ac int. placerat placerat dolor.</p>
+            <img src="images/AbeerZone_quote5.png" alt="Popup Image" class="img-fluid" />
             <a class="close" href="#gallery">&times;</a>
         </div>
     </div>
@@ -367,8 +605,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
     <!-- popup-->
     <div id="gal6" class="pop-overlay animate">
         <div class="popup">
-            <img src="images/7.jpg" alt="Popup Image" class="img-fluid" />
-            <p class="mt-4">Nulla viverra pharetra se, eget pulvinar neque pharetra ac int. placerat placerat dolor.</p>
+            <img src="images/AbeerZone_quote6.png" alt="Popup Image" class="img-fluid" />
             <a class="close" href="#gallery">&times;</a>
         </div>
     </div>
@@ -376,8 +613,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
     <!-- popup-->
     <div id="gal7" class="pop-overlay animate">
         <div class="popup">
-            <img src="images/8.jpg" alt="Popup Image" class="img-fluid" />
-            <p class="mt-4">Nulla viverra pharetra se, eget pulvinar neque pharetra ac int. placerat placerat dolor.</p>
+            <img src="images/AbeerZone_quote17.png" alt="Popup Image" class="img-fluid" />
             <a class="close" href="#">&times;</a>
         </div>
     </div>
@@ -385,8 +621,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
     <!-- popup-->
     <div id="gal8" class="pop-overlay animate">
         <div class="popup">
-            <img src="images/9.jpg" alt="Popup Image" class="img-fluid" />
-            <p class="mt-4">Nulla viverra pharetra se, eget pulvinar neque pharetra ac int. placerat placerat dolor.</p>
+            <img src="images/AbeerZone_quote14.png" alt="Popup Image" class="img-fluid" />
             <a class="close" href="#gallery">&times;</a>
         </div>
     </div>
@@ -394,8 +629,43 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
     <!-- popup-->
     <div id="gal9" class="pop-overlay animate">
         <div class="popup">
-            <img src="images/1.jpg" alt="Popup Image" class="img-fluid" />
-            <p class="mt-4">Nulla viverra pharetra se, eget pulvinar neque pharetra ac int. placerat placerat dolor.</p>
+            <img src="images/AbeerZone_quote9.png" alt="Popup Image" class="img-fluid" />
+            <a class="close" href="#gallery">&times;</a>
+        </div>
+    </div>
+    <div id="gal10" class="pop-overlay animate">
+        <div class="popup">
+            <img src="images/AbeerZone_quote10.png" alt="Popup Image" class="img-fluid" />
+            <a class="close" href="#gallery">&times;</a>
+        </div>
+    </div><div id="gal11" class="pop-overlay animate">
+        <div class="popup">
+            <img src="images/AbeerZone_quote11.png" alt="Popup Image" class="img-fluid" />
+            <a class="close" href="#gallery">&times;</a>
+        </div>
+    </div><div id="gal12" class="pop-overlay animate">
+        <div class="popup">
+            <img src="images/AbeerZone_quote12.png" alt="Popup Image" class="img-fluid" />
+            <a class="close" href="#gallery">&times;</a>
+        </div>
+    </div><div id="gal13" class="pop-overlay animate">
+        <div class="popup">
+            <img src="images/AbeerZone_quote16.png" alt="Popup Image" class="img-fluid" />
+            <a class="close" href="#gallery">&times;</a>
+        </div>
+    </div><div id="gal14" class="pop-overlay animate">
+        <div class="popup">
+            <img src="images/AbeerZone_quote17.png" alt="Popup Image" class="img-fluid" />
+            <a class="close" href="#gallery">&times;</a>
+        </div>
+    </div><div id="gal15" class="pop-overlay animate">
+        <div class="popup">
+            <img src="images/AbeerZone_quote18.png" alt="Popup Image" class="img-fluid" />
+            <a class="close" href="#gallery">&times;</a>
+        </div>
+    </div><div id="gal16" class="pop-overlay animate">
+        <div class="popup">
+            <img src="images/AbeerZone_quote19.png" alt="Popup Image" class="img-fluid" />
             <a class="close" href="#gallery">&times;</a>
         </div>
     </div>
@@ -429,11 +699,11 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                 </section>
 
                 <section id="content2">
-                    <img src="images/tab2.png" class="img-fluid" alt="mobile-image">
+                    <img src="images/soon.png" class="img-fluid" alt="mobile-image">
                 </section>
 
                 <section id="content3">
-                    <img src="images/mobile4.png" class="img-fluid" alt="mobile-image">
+                    <img src="images/soon.png" class="img-fluid" alt="mobile-image">
                 </section>
 
             </div>
@@ -456,89 +726,37 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                 <div class="col-lg-4 test-grid text-left px-lg-3">
                     <div class="test-info">
 
-                        <p>Women are blessing to the world,
-                            there is no world without a women..!</p>
-                        <h3 class="mt-md-4 mt-3"> -ABEER</h3>
-
-                        <div class="test-img text-center mb-3">
-                            <img src="images/team.jpg" class="img-fluid" alt="user-image">
-                        </div>
-                        <div class="mobl-footer test-soc text-center">
-                            <ul class="list-unstyled">
-                                <li>
-                                    <a href="#">
-							<span class="fa fa-facebook-f"></span>
-						</a>
-                                </li>
-                                <li class="mx-1">
-                                    <a href="#">
-							<span class="fa fa-twitter"></span>
-						</a>
-                                </li>
-
-                            </ul>
-                        </div>
+                        <p>The story is nice
+                            But the whole credit goes to the
+                            writer because its represented
+                            beautifully 
+                            The story is quite filmy but the writer
+                            holded the book and maintained that
+                            excitement</p>
+                        <h3 class="mt-md-4 mt-3"> -Ankur</h3>
                     </div>
                 </div>
                 <div class="col-lg-4 test-grid text-left px-lg-3">
                     <div class="test-info">
 
-                        <p>It crushes every bone in your body,
-                            knowing this person you love the most,
-                            can never be yours!</p>
-                        <h3 class="mt-md-4 mt-3"> -ABEER</h3>
-                        <div class="test-img text-center mb-3">
-                            <img src="images/team1.jpg" class="img-fluid" alt="user-image">
-                        </div>
-                        <div class="mobl-footer test-soc text-center">
-                            <ul class="list-unstyled">
-
-                                <li>
-                                    <a href="#">
-							<span class="fa fa-dribbble"></span>
-						</a>
-                                </li>
-                                <li class="ml-1">
-                                    <a href="#">
-							<span class="fa fa-vk"></span>
-						</a>
-                                </li>
-                            </ul>
-                        </div>
+                        <p>Awesome book.. Highly recommended
+                            Heart touching story.. great piece of
+                            writing.. to bring a story to words is the
+                            biggest achievement for any writer.
+                            Loved it.. loved the love story.. it's super
+                            addictive and one don't want to stop
+                            reading until you finish it! HIGHLY
+                            RECOMMENDED</p>
+                        <h3 class="mt-md-4 mt-3"> -John</h3>
                     </div>
                 </div>
                 <div class="col-lg-4 test-grid text-left px-lg-3">
                     <div class="test-info">
 
-                        <p>‘People fall in love;
-                            without even wanting to,
-                            you can’t predict it.
-                            That’s love!</p>
-                            <!-- <p>
-                                As love gets even more spirited when you have your heart
-won by a girl who is your ultimate love,
-passion and the superwoman of your life.
-                            </p> -->
-                        <h3 class="mt-md-4 mt-3"> -ABEER</h3>
-
-                        <div class="test-img text-center mb-3">
-                            <img src="images/team2.jpg" class="img-fluid" alt="user-image">
-                        </div>
-                        <div class="mobl-footer test-soc text-center">
-                            <ul class="list-unstyled">
-                                <li>
-                                    <a href="#">
-							<span class="fa fa-facebook-f"></span>
-						</a>
-                                </li>
-                                <li class="mx-1">
-                                    <a href="#">
-							<span class="fa fa-twitter"></span>
-						</a>
-                                </li>
-
-                            </ul>
-                        </div>
+                        <p>It's really good wt u say abut women
+                            it's really impressive... Till were I read
+                            tht was really really good enough. .</p>
+                        <h3 class="mt-md-4 mt-3"> -Anjan</h3>
                     </div>
                 </div>
             </div>
@@ -551,26 +769,26 @@ passion and the superwoman of your life.
     <section class="contact py-5" id="contact">
         <div class="container">
             <div class="header-wthree py-lg-5 py-4 text-center">
-                <h3 class="tittle mb-lg-3 mb-3"> Get In Touch</h3>
+                <h3 class="tittle mb-lg-3 mb-3" style="color:#fff !important"> Get In Touch</h3>
             </div>
             <div class="contact-form mx-auto text-left">
                 <form name="contactform" id="contactform" method="post" action="#" onsubmit="return(validate());" novalidate="novalidate">
                     <div class="row">
                         <div class="col-lg-4 con-gd">
                             <div class="form-group" data-aos="fade-up">
-                                <label>Name *</label>
+                                <label style="color:#fff !important">Name *</label>
                                 <input type="text" class="form-control" id="name" placeholder="" name="name">
                             </div>
                         </div>
                         <div class="col-lg-4 con-gd">
                             <div class="form-group" data-aos="fade-up">
-                                <label>Email *</label>
+                                <label style="color:#fff !important">Email *</label>
                                 <input type="email" class="form-control" id="email" placeholder="" name="email">
                             </div>
                         </div>
                         <div class="col-lg-4 con-gd">
                             <div class="form-group" data-aos="fade-up">
-                                <label>Phone No. *</label>
+                                <label style="color:#fff !important">Phone No. *</label>
                                 <input type="text" class="form-control" id="phone" placeholder="" name="phone">
                             </div>
                         </div>
@@ -578,7 +796,7 @@ passion and the superwoman of your life.
                     </div>
 
                     <div class="form-group mb-5">
-                        <label>How can we help?</label>
+                        <label style="color:#fff !important">How can we help?</label>
                         <textarea name="issues" class="form-control" id="iq" placeholder=""></textarea>
                     </div>
                     <div class="contact-page">
@@ -640,8 +858,8 @@ passion and the superwoman of your life.
                             </div>
                             <div class="col-md-9 text-left">
                                 <h6>Phone Number</h6>
-                                <p>+ 1234567890</p>
-                                <p>+ 0987654321</p>
+                                <p>+91 7989474067</p>
+                            
                             </div>
                         </div>
                     </li>
@@ -656,7 +874,7 @@ passion and the superwoman of your life.
             <div class="mobl-footer text-center mt-2">
                 <ul class="list-unstyled">
                     <li>
-                        <a href="#">
+                        <a href="https://www.facebook.com/writerabeer" target="_blank">
 							<span class="fa fa-facebook-f"></span>
 						</a>
                     </li>
@@ -666,7 +884,7 @@ passion and the superwoman of your life.
 						</a>
                     </li> -->
                     <li>
-                        <a href="#">
+                        <a href="https://www.instagram.com/writerabeer" target="_blank">
 							<span class="fa fa-instagram"></span>
 						</a>
                     </li>
