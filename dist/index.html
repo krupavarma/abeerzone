@@ -6,9 +6,14 @@
 <head>
     <title>Abeer Zone</title>
     <link rel="icon" href="images/abeer.ico" type="image/ico">
+   
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8" />
+    <meta name="title" description="Valentine Book">
     <meta name="keywords" content="My Three Girl Friends : Abeer,Love,Caring,Appreciation" />
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script>
         addEventListener("load", function() {
             setTimeout(hideURLbar, 0);
@@ -246,6 +251,7 @@
           // @todo pass payment token to your gateway to process payment
           paymentToken = paymentData.paymentMethodData.tokenizationData.token;
         }
+ 
     </script>
         <script async
           src="https://pay.google.com/gp/p/js/pay.js"
@@ -267,6 +273,7 @@
     <!-- online-fonts -->
     <link href="//fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800" rel="stylesheet">
     <!-- //online-fonts -->
+
 </head>
 
 <body>
@@ -274,7 +281,7 @@
     <section class="main-banner" id="home">
         <div class="layer">
             <div class="header-wthree-top-w3layouts text-right">
-                <h1 class="logo"><a href="index.html"><img src="images/logo-new.svg" width="200px"></a></h1>
+                <h1 class="logo"><a href=""><img src="images/logo-new.svg" width="200px"></a></h1>
                 <!-- <ul class="list-unstyled apps-lists text-right">
                     <li>
                         <a href="#" class="btn"><span class="fa fa-apple mr-2" aria-hidden="true"></span>App Store</a>
@@ -288,7 +295,7 @@
                         <input id="check02" type="checkbox" name="menu" />
                         <label for="check02"><span class="fa fa-bars" aria-hidden="true"></span></label>
                         <ul class="submenu">
-                            <li><a href="index.html">Home</a></li>
+                            <li><a href="#index">Home</a></li>
                             <li><a href="#about" class="scroll">About</a></li>
                             <li><a href="#books" class="scroll">Books</a></li>
                             <li><a href="#gallery" class="scroll">Gallery</a></li>
@@ -298,7 +305,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="container">
+            <div class="container" id="index">
                 <div class="baner-info-w3layouts text-center">
                         <h6 class="mx-auto mt-md-4 mt-3">Based on true story</h6>
                     <h3>My Three Girl'Friends</h3>
@@ -326,16 +333,7 @@
                         connect with the people, plus the memories</p>
                     <!-- <p class="my-3">Praesent ullamcorper dui turpis.At vero eos et accusam et justo duo dolores et ea rebum.</p> -->
                     <ul class="tic-info list-unstyled">
-                        <!-- <li>
-
-                            <span class="fa fa-check mr-2"></span> Writer, artist.
-
-                        </li> -->
-                        <li>
-
-                            <span class="fa fa-check mr-2"></span> I love being a writer and it’s the most fulfilling job I’ve ever had.
-
-                        </li>
+                     
                     
                         <li>
 
@@ -368,7 +366,7 @@
 
         </div>
     </section>
-    <section class="mobile py-lg-5 py-5" id="books" style="background-color:#000">
+    <section class="mobile py-lg-5 py-5" id="books" style="background:#000">
         <div class="container">
 
             <div class="row py-lg-5 py-4">
@@ -416,7 +414,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                                 <div class="card-body">
                                     <h4 class="text-uppercase mb-3">Get A Book</h4>
                                     <h5 class="card-title pricing-card-title">
-                                        <span class="align-top">₹</span>199
+                                        <span class="align-top">₹</span>99
 
                                     </h5>
                                     <ul class="price-in list-unstyled mt-3 mb-4">
@@ -426,9 +424,87 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                                      
                                     </ul>
                                     <div class="price-button mt-md-3 mt-2">
-       
-                                            <div id="container" class="buy-btn btn text-uppercase active"></div>
+                                            <a class="btn text-uppercase active" data-toggle="modal" data-target="#exampleModalScrollable">Buy Now</a>
+                                        
+<!-- Modal -->
+<div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalScrollableTitle">Shipping Address</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="contact-form mx-auto text-left">
+                <form name="contactform" id="contactform" method="post" action="#" onsubmit="return validate();" novalidate="novalidate">
+                    <div class="row">
+                        <div class="col-lg-6 con-gd">
+                            <div class="form-group" data-aos="fade-up">
+                                <label style="color:#000 !important">Name *</label>
+                                <input type="text" class="form-control" id="name" placeholder="" name="name">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 con-gd">
+                            <div class="form-group" data-aos="fade-up">
+                                <label style="color:#000 !important">Email *</label>
+                                <input type="email" class="form-control" id="email" placeholder="" name="email">
+                            </div>
+                        </div>
+                
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 con-gd">
+                            <div class="form-group" data-aos="fade-up">
+                                <label style="color:#000 !important">Mobile *</label>
+                                <input type="text" class="form-control" id="mobile" placeholder="" name="mobile">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 con-gd">
+                            <div class="form-group" data-aos="fade-up">
+                                <label style="color:#000 !important">Shipping Address *</label>
+                                <input type="text" class="form-control" id="address" placeholder="" name="address">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 con-gd">
+                            <div class="form-group" data-aos="fade-up">
+                                <label style="color:#000 !important">City *</label>
+                                <input type="text" class="form-control" id="city" placeholder="" name="city">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 con-gd">
+                                <div class="form-group" data-aos="fade-up">
+                                        <label style="color:#000 !important">Zipcode *</label>
+                                        <input type="text" class="form-control" id="zipcode" placeholder="" name="zipcode">
                                     </div>
+                        </div>
+
+                    </div>
+                    <div class="contact-page">
+                           <span>*Delivery Charges Rs.50</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+                <div class="col-lg-6 con-gd">
+                <div id="container" style="margin-bottom:15px !important"  (onSubmit)="validate()"></div>
+                    </div>
+                   
+                    <div class="col-lg-6 con-gd">
+          <button type="button" class="btn btn-secondary cancel-btn" data-dismiss="modal">Cancel</button>
+          </div>
+          <!-- <button type="button" class="btn btn-primary">Continue Payment</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -765,8 +841,8 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
         </div>
     </section>
 
-    <!-- contact -->
-    <section class="contact py-5" id="contact">
+    <!-- contact -->    
+    <section class="contact py-5 book-section " id="contact">
         <div class="container">
             <div class="header-wthree py-lg-5 py-4 text-center">
                 <h3 class="tittle mb-lg-3 mb-3" style="color:#fff !important"> Get In Touch</h3>
@@ -896,7 +972,10 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                 </ul>
             </div>
             <!-- copyright -->
-            <p class="copy-right-grids text-li text-center my-sm-4 my-4">© Mtgf's. All Rights Reserved
+            <p class="copy-right-grids text-li text-center my-sm-4 my-4">©  All Rights Reserved to <a href="https://www.advithux.com" target="_blank">Advithux.com.</a> 
+      
+            </p>
+            <p class="copy-right-grids text-li text-center my-sm-4 my-4">Designed & Developed by <a href="https://www.advithux.com" target="_blank"><img src="images/advithux-logo.png" width="40px"></a> 
       
             </p>
             <div class="top_move text-center">

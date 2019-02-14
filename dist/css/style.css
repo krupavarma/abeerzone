@@ -279,11 +279,20 @@ ul.apps-lists li a span {
 }
 
 /*-- banner --*/
-
+@media (max-width: 767px) {
+    .main-banner,.book-section {
+        background: url(../images/abeer-landing.png)  center no-repeat !important;
+        background-attachment: fixed !important;
+        object-fit: cover;
+        background-size: cover;
+    
+    }
+}
 .main-banner {
     /* background: url(../images/banner1.jpg) center no-repeat; */
     background: url(../images/abeer-landing.png) center no-repeat;
-
+background-attachment: fixed;
+object-fit: cover;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -292,10 +301,20 @@ ul.apps-lists li a span {
     position: relative;
     min-height: 50em;
 }
+.book-section{
+    background: url(../images/abeer-landing.png) center no-repeat !important;
+    background-attachment: fixed !important;
+    object-fit: cover;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        -ms-background-size: cover;
+        background-size: cover;
 
+}
 .layer {
     /* background: url(../images/dots.png); */
-    min-height: 50em;
+    min-height: 64em;
 }
 
 .baner-info-w3layouts {
@@ -1120,7 +1139,7 @@ ul.price-in li {
 .price-button a.active {
     background: #000;
     border: 2px solid #000;
-    color:#fff;
+    color:#fff !important;
 }
 
 /*--//price--*/
@@ -1142,9 +1161,9 @@ ul.price-in li {
 }
 
 .contact-form .form-control {
-    padding: 0.9em;
+    padding: 0.4em !important;
     color: #495057;
-    border: 2px solid #000;
+    /* border: 2px solid #000; */
     border-radius: 0.25rem;
     font-size: 1em;
     letter-spacing: 1px;
@@ -1383,21 +1402,36 @@ a.move-top span {
 /*-- //footer --*/
 
 /*--/responsive--*/
-
+@media(min-width:1440px) {
+    .baner-info-w3layouts h6 {
+        font-size: 1.2em;
+    }
+    .main-banner,
+    .layer {
+        min-height: 84em !important;
+    }
+    .baner-info-w3layouts{
+        /* margin: 105px auto !important;  */
+    }
+}
 @media(max-width:1440px) {
     .baner-info-w3layouts h6 {
         font-size: 1.2em;
+    }
+    .main-banner,
+    .layer {
+        min-height: 43em !important;
     }
 }
 
 @media(max-width:1366px) {
     .main-banner,
     .layer {
-        min-height: 45em;
+        min-height: 40em ;
     }
     .baner-info-w3layouts {
         padding: 15em 0 0;
-        margin: 0 auto;
+        margin: 60 auto;
     }
 }
 
@@ -1638,10 +1672,14 @@ a.move-top span {
     }
     .baner-info-w3layouts {
         padding: 3em 0 0;
-        margin: 65px auto;
+        margin: 135px auto;
     }
     .feature-grids h3 {
         font-size: 0.9em;
+    }
+    .main-banner,
+    .layer {
+        min-height: 40em !important;
     }
 }
 
@@ -1656,11 +1694,13 @@ a.move-top span {
     }
     .baner-info-w3layouts {
         padding: 3em 0 0;
-        margin: 65px auto;
+        margin: 85px auto;
     }
     .main-banner,
     .layer {
-        min-height: 21em;
+        min-height: 30em !important;
+        background-attachment: fixed;
+object-fit: cover;
     }
     .baner-info-w3layouts h3 {
         font-size: 1.8em;
@@ -1688,6 +1728,14 @@ a.move-top span {
         font-size: 0.85em;
         letter-spacing: 2px;
     }
+    .baner-info-w3layouts {
+        padding: 2.2em 0 0 0;
+        margin: 65px auto !important;
+    }
+    .main-banner,
+    .layer {
+        min-height: 45em !important;
+    }
 }
 
 @media(max-width:375px) {
@@ -1697,6 +1745,14 @@ a.move-top span {
     }
     .stats-inner-con {
         padding-top: 3.5em;
+    }
+    .baner-info-w3layouts {
+        padding: 2.2em 0 0 0;
+        margin: 135px auto !important;
+    }
+    .main-banner,
+    .layer {
+        min-height: 44em !important;
     }
 }
 
@@ -1875,5 +1931,18 @@ section#gallery {
     background-color: #000;
     box-shadow: none;
     padding: 8px 4px 10px !important;
+
     /* color: #fff; */
+}
+::ng-deep .gpay-button.long{
+    /* margin-top: 15px !important;
+    margin-left: 25px !important    ; */
+}
+
+.cancel-btn{
+    background: #000;
+    color:#fff;
+}
+.cancel-btn:hover{
+    background: #000;
 }
