@@ -238,6 +238,33 @@
               .catch(function(err) {
                 // show error in developer console for debugging
                 console.error(err);
+                var show = document.getElementById('successMessage');
+            // show.innerHTML=this.errorMsg.statusMessage;
+            show.innerHTML = err.statusMessage;
+                (function( window ) {
+              $("#successModal").on("show", function() {   
+        $("#successModal a.btn").on("click", function(e) {
+           
+            // console.log("button pressed");  
+            $("#successModal").modal('hide');     
+        });
+    });
+    $("#successModal").on("hide", function() {    
+        $("#successModal a.btn").off("click");
+    });
+    
+    $("#successModal").on("hidden", function() {  
+        $("#successModal").remove();
+    });
+  
+    
+    $("#successModal").modal({                   
+      "backdrop"  : "static",
+      "keyboard"  : true,
+      "show"      : true,
+      clickOutside: true,                     
+    });
+})(window);
               });
         }
         
@@ -247,11 +274,37 @@
          * @param {object} paymentData response from Google Pay API after user approves payment
          * @see {@link https://developers.google.com/pay/api/web/reference/object#PaymentData|PaymentData object reference}
          */
+         var popup;
         function processPayment(paymentData) {
           // show returned data in developer console for debugging
             console.log(paymentData);
-          // @todo pass payment token to your gateway to process payment
           paymentToken = paymentData.paymentMethodData.tokenizationData.token;
+          if(paymentToken){
+            var show = document.getElementById('successMessage');
+            // show.innerHTML=this.errorMsg.statusMessage;
+            show.innerHTML = "Payment Successfull";
+              (function( window, undefined ) {
+              $("#successModal").on("show", function() {   
+        $("#successModal a.btn").on("click", function(e) {
+            // console.log("button pressed");  
+            $("#successModal").modal('hide');     
+        });
+    });
+    $("#successModal").on("hide", function() {    
+        $("#successModal a.btn").off("click");
+    });
+    
+    $("#successModal").on("hidden", function() {  
+        $("#successModal").remove();
+    });
+    
+    $("#successModal").modal({                   
+      "backdrop"  : "static",
+      "keyboard"  : true,
+      "show"      : true                     
+    });
+})(window);
+          }
         }
  
     </script>
@@ -506,6 +559,19 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
       </div>
     </div>
   </div>
+  <div id="successModal" class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <!-- dialog body -->
+            <div class="modal-body">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+             <p id="successMessage"></p>
+            </div>
+            <!-- dialog buttons -->
+            <div class="modal-footer"><button type="button" class="btn btn-primary ok">OK</button></div>
+          </div>
+        </div>
+      </div>
                                         </div>
                                 </div>
                             </div>
