@@ -168,6 +168,7 @@
               .then(function(response) {
                 if (response.result) {
                   addGooglePayButton();
+                  addGooglePayButtonEbook();
                   // @todo prefetch payment data to improve performance after confirming site functionality
                    prefetchGooglePaymentData();
                 }
@@ -190,7 +191,12 @@
               paymentsClient.createButton({onClick: onGooglePaymentButtonClicked});
           document.getElementById('container').appendChild(button);
         }
-        
+        function addGooglePayButtonEbook() {
+          const paymentsClient = getGooglePaymentsClient();
+          const button =
+              paymentsClient.createButton({onClick: onGooglePaymentButtonClicked});
+          document.getElementById('container1').appendChild(button);
+        }
         /**
          * Provide Google Pay API with a payment amount, currency, and amount status
          *
@@ -306,7 +312,36 @@
 })(window);
           }
         }
- 
+       function myFunction(){
+        var formData = document.getElementById('getInTouchForm');
+        formData.onsubmit = function(e){
+            e.preventDefault();           
+          var obj = {
+         data:
+          {"name":formData.name.value,
+          "email":formData.email.value, 
+          "phone":formData.phone.value,
+          "query":formData.query.value
+          }
+          };
+          var xhr = new XMLHttpRequest;
+            xhr.open('POST', 'http://10.22.85.64:5000/queries', true);
+            xhr.send(JSON.stringify(obj));
+            console.log(obj);
+            xhr.onload = function(){
+            var ourData = JSON.parse(xhr.response);
+            console.log(ourData)
+            document.getElementById('response-text').innerText = ourData.data.message;
+            formData.reset();
+            setTimeout(function()
+            { 
+                document.getElementById('response-text').innerText = '';
+            }, 4000);
+    }
+          
+    
+}
+        }
     </script>
         <script async
           src="https://pay.google.com/gp/p/js/pay.js"
@@ -463,6 +498,9 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                             <div class="pricing-grid">
                                  <img src="images/book-cover-page.png" width="240px" height="100%"> 
                             </div>
+                            <div>
+                                <a class="ebook" data-toggle="modal" data-target="#exampleModalScrollable1">Buy E-Book ₹49</a>
+                            </div>
                         </div>
                         <div class="col-md-6 price-main text-center">
                             <div class=" card">
@@ -481,7 +519,59 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                                     <div class="price-button mt-md-3 mt-2">
                                             <a class="btn text-uppercase active" data-toggle="modal" data-target="#exampleModalScrollable">Buy Now</a>
                                         
-<!-- Modal -->
+<!-- Modal for Ebook-->
+<div class="modal fade" id="exampleModalScrollable1" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalScrollableTitle">Download Ebook</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <div class="contact-form mx-auto text-left">
+                    <form name="contactform" >
+                        <div class="row">
+                            <div class="col-lg-6 con-gd">
+                                <div class="form-group" data-aos="fade-up">
+                                    <label style="color:#000 !important">Name *</label>
+                                    <input type="text" class="form-control" id="name" placeholder="" name="name">
+                                </div>
+                            </div>
+                            <div class="col-lg-6 con-gd">
+                                <div class="form-group" data-aos="fade-up">
+                                    <label style="color:#000 !important">Email *</label>
+                                    <input type="email" class="form-control" id="email" placeholder="" name="email">
+                                </div>
+                            </div>
+                    
+    
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 con-gd">
+                                <div class="form-group" data-aos="fade-up">
+                                    <label style="color:#000 !important">Mobile *</label>
+                                    <input type="text" class="form-control" id="mobile" placeholder="" name="mobile">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                    <div class="col-lg-6 con-gd">
+                    <div id="container" style="margin-bottom:15px !important"  (onSubmit)="validate()"></div>
+                        </div>
+                       
+                        <div class="col-lg-6 con-gd">
+              <button type="button" class="btn btn-secondary cancel-btn" data-dismiss="modal">Cancel</button>
+              </div>
+              <!-- <button type="button" class="btn btn-primary">Continue Payment</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
 <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
       <div class="modal-content">
@@ -548,7 +638,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
         </div>
         <div class="row">
                 <div class="col-lg-6 con-gd">
-                <div id="container" style="margin-bottom:15px !important"  (onSubmit)="validate()"></div>
+                <div id="container1" style="margin-bottom:15px !important"  (onSubmit)="validate()"></div>
                     </div>
                    
                     <div class="col-lg-6 con-gd">
@@ -956,7 +1046,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                 <h3 class="tittle mb-lg-3 mb-3" style="color:#fff !important"> Get In Touch</h3>
             </div>
             <div class="contact-form mx-auto text-left">
-                <!-- <form name="contactform" > -->
+                <form name="getInTouchForm" id="getInTouchForm" method="post" action="">
                     <div class="row">
                         <div class="col-lg-4 con-gd">
                             <div class="form-group" data-aos="fade-up">
@@ -981,12 +1071,13 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
 
                     <div class="form-group mb-5">
                         <label style="color:#fff !important">How can we help?</label>
-                        <textarea name="issues" class="form-control" id="iq" placeholder=""></textarea>
+                        <textarea name="issues" class="form-control" name="query" id="query" placeholder=""></textarea>
                     </div>
                     <div class="contact-page">
-                        <button type="" class="btn btn-default">Submit</button>
+                        <button type="submit" class="btn btn-default" onclick="myFunction()">Submit</button>
+                        <p id="response-text" style="color:#fff !important;font-size:14px"></p>
                     </div>
-                <!-- </form> -->
+                </form>
             </div>
             <!-- <div class="map my-md-5 my-3">
 

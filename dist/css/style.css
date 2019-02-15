@@ -2023,3 +2023,14 @@ section#gallery {
     }
   }
   
+
+  .ebook{
+    position: relative;
+    bottom: 75px;
+    color: #fff !important;
+    background: #000;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+
+  }
