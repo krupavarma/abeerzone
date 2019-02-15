@@ -302,14 +302,14 @@ object-fit: cover;
     min-height: 50em;
 }
 .book-section{
-    background: url(../images/abeer-landing.png)   no-repeat !important;
+    background: url(../images/abeer-landing.png) center  no-repeat !important;
     background-attachment: fixed !important;
     object-fit: cover;
-        -webkit-background-size: cover ;
+        -webkit-background-size: cover !important;
         -moz-background-size: cover ;
         -o-background-size: cover ;
         -ms-background-size: cover ;
-        background-size: cover ;
+        background-size: cover !important;
 
 }
 .layer {
