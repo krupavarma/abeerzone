@@ -364,6 +364,13 @@
     
 }
         }
+        function validateForm() {
+  var x = document.forms["shippingAddressDetails"]["name"].value;
+  if (x == "") {
+    alert("Name must be filled out");
+    return false;
+  }
+}
     </script>
         <script async
           src="https://pay.google.com/gp/p/js/pay.js"
@@ -605,7 +612,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
         </div>
         <div class="modal-body">
             <div class="contact-form mx-auto text-left">
-                <form name="shippingAddressDetails" id="shippingAddressDetails" method="post" action="" >
+                <form name="shippingAddressDetails" id="shippingAddressDetails" method="post" action="" onsubmit="return validateForm()">
                     <div class="row">
                         <div class="col-lg-6 con-gd">
                             <div class="form-group" data-aos="fade-up">
@@ -615,7 +622,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                         </div>
                         <div class="col-lg-6 con-gd">
                             <div class="form-group" data-aos="fade-up">
-                                <label style="color:#000 !important">Email *</label>
+                                <label style="color:#000 !important">Email *<span style="font-size:10px !important">(Google pay Email)</span></label>
                                 <input type="email" class="form-control" id="email" placeholder="Email" name="email">
                             </div>
                         </div>
@@ -686,7 +693,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                                 </div>
                                
                                 <div class="col-lg-6 con-gd">
-                      <button type="button" class="btn btn-secondary cancel-btn" data-dismiss="modal">Cancel</button>
+                      <!-- <button type="button" class="btn btn-secondary cancel-btn" data-dismiss="modal">Cancel</button> -->
                       </div>
                       <!-- <button type="button" class="btn btn-primary">Continue Payment</button> -->
                     </div>
