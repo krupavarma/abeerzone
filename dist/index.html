@@ -273,22 +273,17 @@
 })(window);
               });
         }
-        
-        /**
-         * Process payment data returned by the Google Pay API
-         *
-         * @param {object} paymentData response from Google Pay API after user approves payment
-         * @see {@link https://developers.google.com/pay/api/web/reference/object#PaymentData|PaymentData object reference}
-         */
+  
          var popup;
         function processPayment(paymentData) {
           // show returned data in developer console for debugging
             console.log(paymentData);
           paymentToken = paymentData.paymentMethodData.tokenizationData.token;
           if(paymentToken){
+            this.shippingFunction();
             var show = document.getElementById('successMessage');
             // show.innerHTML=this.errorMsg.statusMessage;
-            show.innerHTML = "Payment Successfull";
+            show.innerHTML = "Payment Successfull.Book will be delivered to u r Address by Courier Service.For any queries contact our team";
               (function( window, undefined ) {
               $("#successModal").on("show", function() {   
         $("#successModal a.btn").on("click", function(e) {
@@ -311,6 +306,33 @@
     });
 })(window);
           }
+        }
+        function shippingFunction(){
+        var shippingData = document.getElementById('shippingAddressDetails');
+        shippingData.onsubmit = function(e){
+            e.preventDefault();           
+          var shipObj = {
+         data:
+          {"name":shippingData.name.value,
+          "email":shippingData.email.value, 
+          "mobile":shippingData.mobile.value,
+          "homeAddress":shippingData.homeAddress.value,
+          "streetAddress":shippingData.streetAddress.value,
+          "landmark":shippingData.landmark.value,
+          "pincode":shippingData.pincode.value,
+          "city":shippingData.city.value,
+          "country":shippingData.country.value,
+          "paidAmount":'149'
+          }
+          };
+          var xhr = new XMLHttpRequest;
+            xhr.open('POST', 'http://10.22.85.64:5000/buyers', true);
+            xhr.send(JSON.stringify(shipObj));
+            console.log(shipObj);
+            shippingData.reset();
+           
+    
+}
         }
        function myFunction(){
         var formData = document.getElementById('getInTouchForm');
@@ -498,9 +520,9 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                             <div class="pricing-grid">
                                  <img src="images/book-cover-page.png" width="240px" height="100%"> 
                             </div>
-                            <div>
+                            <!-- <div>
                                 <a class="ebook" data-toggle="modal" data-target="#exampleModalScrollable1">Buy E-Book ₹49</a>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="col-md-6 price-main text-center">
                             <div class=" card">
@@ -583,69 +605,95 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
         </div>
         <div class="modal-body">
             <div class="contact-form mx-auto text-left">
-                <form name="contactform" >
+                <form name="shippingAddressDetails" id="shippingAddressDetails" method="post" action="" >
                     <div class="row">
                         <div class="col-lg-6 con-gd">
                             <div class="form-group" data-aos="fade-up">
                                 <label style="color:#000 !important">Name *</label>
-                                <input type="text" class="form-control" id="name" placeholder="" name="name">
+                                <input type="text" class="form-control" id="name" placeholder="Name" name="name">
                             </div>
                         </div>
                         <div class="col-lg-6 con-gd">
                             <div class="form-group" data-aos="fade-up">
                                 <label style="color:#000 !important">Email *</label>
-                                <input type="email" class="form-control" id="email" placeholder="" name="email">
+                                <input type="email" class="form-control" id="email" placeholder="Email" name="email">
                             </div>
                         </div>
                 
 
                     </div>
                     <div class="row">
-                        <div class="col-lg-6 con-gd">
-                            <div class="form-group" data-aos="fade-up">
-                                <label style="color:#000 !important">Mobile *</label>
-                                <input type="text" class="form-control" id="mobile" placeholder="" name="mobile">
+                            <div class="col-lg-6 con-gd">
+                                    <div class="form-group" data-aos="fade-up">
+                                        <label style="color:#000 !important">Mobile *</label>
+                                        <input type="text" class="form-control" id="mobile" placeholder="Mobile" name="mobile">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 con-gd">
+                                        <div class="form-group" data-aos="fade-up">
+                                                <label style="color:#000 !important">Country *</label>
+                                                <input type="text" class="form-control" id="country" placeholder="Country" name="country">
+                                            </div>
+                                </div>
+
+                    </div>
+                    <div class="row">
+                            <div class="col-lg-6 con-gd">
+                                <div class="form-group" data-aos="fade-up">
+                                    <label style="color:#000 !important">Shipping Address *</label>
+                                    <input type="text" class="form-control" id="homeAddress" placeholder="Flat / Building" name="homeAddress">
+                                </div>
                             </div>
+                            <div class="col-lg-6 con-gd">
+                                <div class="form-group" data-aos="fade-up">
+                                    <label style="color:#fff !important">Colony / Street</label>
+                                    <input type="text" class="form-control" id="streetAddress" placeholder="Colony / Street" name="streetAddress">
+                                </div>
+                            </div>
+    
                         </div>
+                    <div class="row">
+                            <div class="col-lg-6 con-gd">
+                                    <div class="form-group" data-aos="fade-up">
+                                        <label style="color:#000 !important">City *</label>
+                                        <input type="text" class="form-control" id="city" placeholder="City" name="city">
+                                    </div>
+                                </div>
                         <div class="col-lg-6 con-gd">
                             <div class="form-group" data-aos="fade-up">
-                                <label style="color:#000 !important">Shipping Address *</label>
-                                <input type="text" class="form-control" id="address" placeholder="" name="address">
+                                <label style="color:#000 !important">Landmark*</label>
+                                <input type="text" class="form-control" id="landmark" placeholder="Landmark" name="landmark">
                             </div>
                         </div>
 
                     </div>
                     <div class="row">
-                        <div class="col-lg-6 con-gd">
-                            <div class="form-group" data-aos="fade-up">
-                                <label style="color:#000 !important">City *</label>
-                                <input type="text" class="form-control" id="city" placeholder="" name="city">
-                            </div>
-                        </div>
-                        <div class="col-lg-6 con-gd">
-                                <div class="form-group" data-aos="fade-up">
-                                        <label style="color:#000 !important">Zipcode *</label>
-                                        <input type="text" class="form-control" id="zipcode" placeholder="" name="zipcode">
+                            <div class="col-lg-6 con-gd">
+                                    <div class="form-group" data-aos="fade-up">
+                                        <label style="color:#000 !important">Pincode *</label>
+                                        <input type="text" class="form-control" id="pincode" placeholder="Pincode" name="pincode">
                                     </div>
-                        </div>
-
+                                </div>
                     </div>
+                
+                  
                     <div class="contact-page">
                            <span>*Delivery Charges Rs.50</span>
+                    </div>
+                    <div class="row">
+                            <div class="col-lg-6 con-gd">
+                            <div id="container1" style="margin-bottom:15px !important"  onclick="shippingFunction()"></div>
+                                </div>
+                               
+                                <div class="col-lg-6 con-gd">
+                      <!-- <button type="button" class="btn btn-secondary cancel-btn" data-dismiss="modal">Cancel</button> -->
+                      </div>
+                      <!-- <button type="button" class="btn btn-primary">Continue Payment</button> -->
                     </div>
                 </form>
             </div>
         </div>
-        <div class="row">
-                <div class="col-lg-6 con-gd">
-                <div id="container1" style="margin-bottom:15px !important"  (onSubmit)="validate()"></div>
-                    </div>
-                   
-                    <div class="col-lg-6 con-gd">
-          <button type="button" class="btn btn-secondary cancel-btn" data-dismiss="modal">Cancel</button>
-          </div>
-          <!-- <button type="button" class="btn btn-primary">Continue Payment</button> -->
-        </div>
+      
       </div>
     </div>
   </div>
