@@ -287,6 +287,9 @@ ul.apps-lists li a span {
         background-size: cover !important;
     
     }
+    .carousel-item {
+        height: 15rem !important;
+    }
 }
 .main-banner {
     /* background: url(../images/banner1.jpg) center no-repeat; */
@@ -1903,7 +1906,7 @@ section#gallery {
   }
   
   .toggle:checked + .lbl-toggle + .collapsible-content {
-    max-height: 590px;
+    max-height: fit-content;
   }
   
   .toggle:checked + .lbl-toggle {
@@ -1964,7 +1967,7 @@ section#gallery {
   
   /* Declare heights because of positioning of img element */
   .carousel-item {
-    height: 15rem;
+    height: 9rem !important;
     background-color: #000 !important;
   }
   
