@@ -11,7 +11,6 @@
     <meta charset="utf-8" />
     <meta name="title" description="Valentine Book">
     <meta name="keywords" content="My Three Girl Friends : Abeer,Love,Caring,Appreciation" />
-    
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
@@ -115,6 +114,7 @@
          * @returns {object} Google Pay API version, payment methods supported by the site
          */
         function getGoogleIsReadyToPayRequest() {
+
           return Object.assign(
               {},
               baseRequest,
@@ -131,7 +131,7 @@
          * @returns {object} PaymentDataRequest fields
          */
         function getGooglePaymentDataRequest() {
-          const paymentDataRequest = Object.assign({}, baseRequest);
+                const paymentDataRequest = Object.assign({}, baseRequest);
           paymentDataRequest.allowedPaymentMethods = [cardPaymentMethod];
           paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
           paymentDataRequest.merchantInfo = {
@@ -141,6 +141,8 @@
             merchantName: 'Abeer Zone'
           };
           return paymentDataRequest;
+            
+       
         }
         
         /**
@@ -150,6 +152,7 @@
          * @returns {google.payments.api.PaymentsClient} Google Pay API client
          */
         function getGooglePaymentsClient() {
+
           if ( paymentsClient === null ) {
             paymentsClient = new google.payments.api.PaymentsClient({environment: 'TEST'});
           }
@@ -186,6 +189,7 @@
          * @see {@link https://developers.google.com/pay/api/web/guides/brand-guidelines|Google Pay brand guidelines}
          */
         function addGooglePayButton() {
+
           const paymentsClient = getGooglePaymentsClient();
           const button =
               paymentsClient.createButton({onClick: onGooglePaymentButtonClicked});
@@ -204,6 +208,7 @@
          * @returns {object} transaction info, suitable for use as transactionInfo property of PaymentDataRequest
          */
         function getGoogleTransactionInfo() {
+
           return {
             currencyCode: 'INR',
             totalPriceStatus: 'FINAL',
@@ -218,6 +223,7 @@
          * @see {@link https://developers.google.com/pay/api/web/reference/client#prefetchPaymentData|prefetchPaymentData()}
          */
         function prefetchGooglePaymentData() {
+
           const paymentDataRequest = getGooglePaymentDataRequest();
           // transactionInfo must be set but does not affect cache
           paymentDataRequest.transactionInfo = {
@@ -232,9 +238,10 @@
          * Show Google Pay payment sheet when Google Pay payment button is clicked
          */
         function onGooglePaymentButtonClicked() {
+          validateForm();
+          if(validateForm()){
           const paymentDataRequest = getGooglePaymentDataRequest();
           paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
-        
           const paymentsClient = getGooglePaymentsClient();
           paymentsClient.loadPaymentData(paymentDataRequest)
               .then(function(paymentData) {
@@ -242,42 +249,31 @@
                 processPayment(paymentData);
               })
               .catch(function(err) {
-                // show error in developer console for debugging
                 console.error(err);
                 var show = document.getElementById('successMessage');
-            // show.innerHTML=this.errorMsg.statusMessage;
             show.innerHTML = err.statusMessage;
                 (function( window ) {
               $("#successModal").on("show", function() {   
-        $("#successModal a.btn").on("click", function(e) {
-           
-            // console.log("button pressed");  
-            $("#successModal").modal('hide');     
-        });
-    });
-    $("#successModal").on("hide", function() {    
-        $("#successModal a.btn").off("click");
-    });
-    
-    $("#successModal").on("hidden", function() {  
-        $("#successModal").remove();
-    });
-  
-    
-    $("#successModal").modal({                   
-      "backdrop"  : "static",
-      "keyboard"  : true,
-      "show"      : true,
-      clickOutside: true,                     
-    });
-})(window);
-              });
-        }
-  
-         var popup;
+                $("#successModal a.btn").on("click", function(e) {
+                    $("#successModal").modal('hide');     
+                });
+                });
+                $("#successModal").on("hide", function() {    
+                    $("#successModal a.btn").off("click");
+                });
+                $("#successModal").on("hidden", function() {  
+                    $("#successModal").remove();
+                });
+                    $("#successModal").modal({                   
+                    "backdrop"  : "static",
+                    "keyboard"  : true,
+                    "show"      : true,
+                    clickOutside: true,                     
+                    });})(window);}); 
+                }
+}
+   var popup;
         function processPayment(paymentData) {
-          // show returned data in developer console for debugging
-            console.log(paymentData);
           paymentToken = paymentData.paymentMethodData.tokenizationData.token;
           if(paymentToken){
             this.shippingFunction();
@@ -287,7 +283,6 @@
               (function( window, undefined ) {
               $("#successModal").on("show", function() {   
         $("#successModal a.btn").on("click", function(e) {
-            // console.log("button pressed");  
             $("#successModal").modal('hide');     
         });
     });
@@ -328,16 +323,50 @@
           var xhr = new XMLHttpRequest;
             xhr.open('POST', 'http://10.22.85.64:5000/buyers', true);
             xhr.send(JSON.stringify(shipObj));
-            console.log(shipObj);
-            shippingData.reset();
-           
-    
+  
 }
         }
-       function myFunction(){
-        var formData = document.getElementById('getInTouchForm');
-        formData.onsubmit = function(e){
-            e.preventDefault();           
+    
+       
+        function myFunction(){
+        document.getElementById('queryNameError').innerText = "";
+        document.getElementById('queryEmailError').innerText = "";
+        document.getElementById('queryPhoneError').innerText = "";
+        document.getElementById('queryError').innerText = "";
+
+        var queryName = document.getElementById('queryName');
+        var queryEmail = document.getElementById('queryEmail');
+        var queryMobile = document.getElementById('queryPhone');
+        var query = document.getElementById('query');
+
+            if(queryName.value.length == 0){
+            document.getElementById('queryNameError').innerText = "Required";
+            queryName.focus();
+            // return false;
+            }
+           else if(queryEmail.value.length == 0){
+            document.getElementById('queryEmailError').innerText = "Required";
+            queryEmail.focus();
+            // return false;
+            }
+            else if(queryMobile.value.length == 0){
+            document.getElementById('queryPhoneError').innerText = "Required";
+            queryMobile.focus();
+            // return false;
+            }  
+            else if(query.value.length == 0){
+            document.getElementById('queryError').innerText = "Required";
+            query.focus();
+            // return false;
+            }
+            else{
+                
+                submitGetTouchForm();
+                // return true;
+            }
+        }
+        function submitGetTouchForm(){
+            var formData = document.getElementById('getInTouchForm');   
           var obj = {
          data:
           {"name":formData.name.value,
@@ -349,28 +378,94 @@
           var xhr = new XMLHttpRequest;
             xhr.open('POST', 'http://10.22.85.64:5000/queries', true);
             xhr.send(JSON.stringify(obj));
-            console.log(obj);
             xhr.onload = function(){
             var ourData = JSON.parse(xhr.response);
-            console.log(ourData)
             document.getElementById('response-text').innerText = ourData.data.message;
             formData.reset();
             setTimeout(function()
             { 
                 document.getElementById('response-text').innerText = '';
             }, 4000);
-    }
-          
-    
-}
+    } 
         }
         function validateForm() {
-  var x = document.forms["shippingAddressDetails"]["name"].value;
-  if (x == "") {
-    alert("Name must be filled out");
-    return false;
-  }
-}
+            var buyerName = document.getElementById('buyerName');
+            var buyerEmail = document.getElementById('buyerEmail');
+            var buyerMobile = document.getElementById('buyerMobile');
+            var buyerCountry = document.getElementById('buyerCountry');
+            var buyerHomeAddress = document.getElementById('buyerHomeAddress');
+            var buyerStreetAddress = document.getElementById('buyerStreetAddress');
+            var buyerCity = document.getElementById('buyerCity');
+            var buyerLandmark = document.getElementById('buyerLandmark');
+            var buyerPincode = document.getElementById('buyerPincode');
+            document.getElementById('nameError').innerText = "";
+            document.getElementById('emailError').innerText = "";
+            document.getElementById('mobileError').innerText = "";
+            document.getElementById('countryError').innerText = "";
+            document.getElementById('homeError').innerText = "";
+            document.getElementById('streetError').innerText = "";
+            document.getElementById('cityError').innerText = "";
+            document.getElementById('landmarkError').innerText = "";
+            document.getElementById('pincodeError').innerText = "";
+            if(buyerName.value.length == 0){
+            document.getElementById('nameError').innerText = "Required";
+            buyerName.focus();
+            return false;
+            }
+           else if(buyerEmail.value.length == 0){
+            document.getElementById('emailError').innerText = "Required";
+            buyerEmail.focus();
+            return false;
+            }   
+       
+            else if(buyerMobile.value.length == 0){
+            document.getElementById('mobileError').innerText = "Required";
+            buyerMobile.focus();
+            return false;
+            }
+           
+            else if(buyerCountry.value.length == 0){
+            document.getElementById('countryError').innerText = "Required";
+            buyerCountry.focus();
+            return false;
+            }
+           
+            else if(buyerHomeAddress.value.length == 0){
+            document.getElementById('homeError').innerText = "Required";
+            buyerHomeAddress.focus();
+            return false;
+            }
+        
+            else if(buyerHomeAddress.value.length == 0){
+            document.getElementById('streetError').innerText = "Required";
+            buyerStreetAddress.focus();
+            return false;
+            }
+      
+            else if(buyerCity.value.length == 0){
+            document.getElementById('cityError').innerText = "Required";
+            buyerCity.focus();
+            return false;
+            }
+         
+            else if(buyerLandmark.value.length == 0){
+            document.getElementById('landmarkError').innerText = "Required";
+            buyerLandmark.focus();
+            return false;
+            }
+      
+            else if(buyerPincode.value.length == 0){
+            document.getElementById('pincodeError').innerText = "Required";
+            buyerPincode.focus();
+            return false;
+            }
+            else{
+                this.shippingFunction();
+                return true;
+               
+            }
+    }
+  
     </script>
         <script async
           src="https://pay.google.com/gp/p/js/pay.js"
@@ -401,14 +496,7 @@
         <div class="layer">
             <div class="header-wthree-top-w3layouts text-right">
                 <h1 class="logo"><a href=""><img src="images/logo-new.svg" width="200px"></a></h1>
-                <!-- <ul class="list-unstyled apps-lists text-right">
-                    <li>
-                        <a href="#" class="btn"><span class="fa fa-apple mr-2" aria-hidden="true"></span>App Store</a>
-                    </li>
-                    <li class="ml-2">
-                        <a href="#" class="btn"><span class="fa fa-android mr-2" aria-hidden="true"></span>Android</a>
-                    </li>
-                </ul> -->
+               
                 <ul id="menu">
                     <li>
                         <input id="check02" type="checkbox" name="menu" />
@@ -596,7 +684,6 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                         <div class="col-lg-6 con-gd">
               <button type="button" class="btn btn-secondary cancel-btn" data-dismiss="modal">Cancel</button>
               </div>
-              <!-- <button type="button" class="btn btn-primary">Continue Payment</button> -->
             </div>
           </div>
         </div>
@@ -617,13 +704,15 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                         <div class="col-lg-6 con-gd">
                             <div class="form-group" data-aos="fade-up">
                                 <label style="color:#000 !important">Name *</label>
-                                <input type="text" class="form-control" id="name" placeholder="Name" name="name">
+                                <input type="text" class="form-control" id="buyerName" placeholder="Name" name="name">
+                                <span id="nameError" style="color:red"></span>
                             </div>
                         </div>
                         <div class="col-lg-6 con-gd">
                             <div class="form-group" data-aos="fade-up">
                                 <label style="color:#000 !important">Email *<span style="font-size:10px !important">(Google pay Email)</span></label>
-                                <input type="email" class="form-control" id="email" placeholder="Email" name="email">
+                                <input type="email" class="form-control" id="buyerEmail" placeholder="Email" name="email">
+                                <span id="emailError" style="color:red"></span>
                             </div>
                         </div>
                 
@@ -633,13 +722,15 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                             <div class="col-lg-6 con-gd">
                                     <div class="form-group" data-aos="fade-up">
                                         <label style="color:#000 !important">Mobile *</label>
-                                        <input type="text" class="form-control" id="mobile" placeholder="Mobile" name="mobile">
+                                        <input type="text" class="form-control" id="buyerMobile" placeholder="Mobile" name="mobile">
+                                        <span id="mobileError" style="color:red"></span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 con-gd">
                                         <div class="form-group" data-aos="fade-up">
                                                 <label style="color:#000 !important">Country *</label>
-                                                <input type="text" class="form-control" id="country" placeholder="Country" name="country">
+                                                <input type="text" class="form-control" id="buyerCountry" placeholder="Country" name="country">
+                                                <span id="countryError" style="color:red"></span>
                                             </div>
                                 </div>
 
@@ -648,13 +739,15 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                             <div class="col-lg-6 con-gd">
                                 <div class="form-group" data-aos="fade-up">
                                     <label style="color:#000 !important">Shipping Address *</label>
-                                    <input type="text" class="form-control" id="homeAddress" placeholder="Flat / Building" name="homeAddress">
+                                    <input type="text" class="form-control" id="buyerHomeAddress" placeholder="Flat / Building" name="homeAddress">
+                                    <span id="homeError" style="color:red"></span>
                                 </div>
                             </div>
                             <div class="col-lg-6 con-gd">
                                 <div class="form-group" data-aos="fade-up">
                                     <label style="color:#fff !important">Colony / Street</label>
-                                    <input type="text" class="form-control" id="streetAddress" placeholder="Colony / Street" name="streetAddress">
+                                    <input type="text" class="form-control" id="buyerStreetAddress" placeholder="Colony / Street" name="streetAddress">
+                                    <span id="streetError" style="color:red"></span>
                                 </div>
                             </div>
     
@@ -663,13 +756,15 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                             <div class="col-lg-6 con-gd">
                                     <div class="form-group" data-aos="fade-up">
                                         <label style="color:#000 !important">City *</label>
-                                        <input type="text" class="form-control" id="city" placeholder="City" name="city">
+                                        <input type="text" class="form-control" id="buyerCity" placeholder="City" name="city">
+                                        <span id="cityError" style="color:red"></span>
                                     </div>
                                 </div>
                         <div class="col-lg-6 con-gd">
                             <div class="form-group" data-aos="fade-up">
                                 <label style="color:#000 !important">Landmark*</label>
-                                <input type="text" class="form-control" id="landmark" placeholder="Landmark" name="landmark">
+                                <input type="text" class="form-control" id="buyerLandmark" placeholder="Landmark" name="landmark">
+                                <span id="landmarkError" style="color:red"></span>
                             </div>
                         </div>
 
@@ -678,7 +773,8 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                             <div class="col-lg-6 con-gd">
                                     <div class="form-group" data-aos="fade-up">
                                         <label style="color:#000 !important">Pincode *</label>
-                                        <input type="text" class="form-control" id="pincode" placeholder="Pincode" name="pincode">
+                                        <input type="text" class="form-control" id="buyerPincode" placeholder="Pincode" name="pincode">
+                                        <span id="pincodeError" style="color:red"></span>
                                     </div>
                                 </div>
                     </div>
@@ -689,13 +785,13 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                     </div>
                     <div class="row">
                             <div class="col-lg-6 con-gd">
-                            <div id="container1" style="margin-bottom:15px !important"  onclick="shippingFunction()"></div>
+                            <div id="container1" style="margin-bottom:15px !important"></div>
+                          
                                 </div>
                                
                                 <div class="col-lg-6 con-gd">
-                      <!-- <button type="button" class="btn btn-secondary cancel-btn" data-dismiss="modal">Cancel</button> -->
+                      <button type="button" class="btn cancel-btn" data-dismiss="modal">Cancel</button>
                       </div>
-                      <!-- <button type="button" class="btn btn-primary">Continue Payment</button> -->
                     </div>
                 </form>
             </div>
@@ -726,64 +822,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
             </div>
         </div>
     </section>
-    <!--// banner-bottom-w3ls-->
-    <!--/services -->
-    <!-- <section class="services py-lg-5 py-4" id="services">
-        <div class="container py-sm-4 py-4">
-            <div class="header-wthree py-lg-5 py-3 text-center">
-                <h3 class="tittle mb-lg-3 mb-3">What We Love To Do</h3>
-            </div>
-            <div class="feature-grids row text-left">
-                <div class="col-lg-4">
-                    <div class="bottom-gd p-lg-5 p-3">
-                        <span class="fa fa-pencil-square-o" aria-hidden="true"></span>
-                        <h3 class="my-4">Customizeable</h3>
-                        <p>Integer sit amet mattis quam, sit amet ultricies velit. Praesent ullamcorper dui turpis.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="bottom-gd2-active p-lg-5 p-3">
-                        <span class="fa fa-laptop" aria-hidden="true"></span>
-                        <h3 class="my-4">Fully Responsive</h3>
-                        <p>Integer sit amet mattis quam, sit amet ultricies velit. Praesent ullamcorper dui turpis.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="bottom-gd p-lg-5 p-3">
-                        <span class="fa fa-folder-open-o" aria-hidden="true"></span>
-                        <h3 class="my-4">Well Documented</h3>
-                        <p>Integer sit amet mattis quam, sit amet ultricies velit. Praesent ullamcorper dui turpis.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-
-                    <div class="bottom-gd p-lg-5 p-3">
-                        <span class="fa fa-clone" aria-hidden="true"></span>
-                        <h3 class="my-4">Friednly Design</h3>
-                        <p>Integer sit amet mattis quam, sit amet ultricies velit. Praesent ullamcorper dui turpis.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="bottom-gd p-lg-5 p-3">
-                        <span class="fa fa-headphones" aria-hidden="true"></span>
-                        <h3 class="my-4">Online Support</h3>
-                        <p>Integer sit amet mattis quam, sit amet ultricies velit. Praesent ullamcorper dui turpis.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="bottom-gd p-lg-5 p-3">
-                        <span class="fa fa-magic" aria-hidden="true"></span>
-                        <h3 class="my-4">Retina Ready</h3>
-                        <p>Integer sit amet mattis quam, sit amet ultricies velit. Praesent ullamcorper dui turpis.</p>
-                    </div>
-                </div>
-
-            </div>
-
-
-        </div>
-    </section> -->
-    <!--// services -->
+    
     <section class="middile-sec pt-5" id="">
             <div class="container">
                 <div class="header-wthree py-lg-5 py-3 text-center">
@@ -998,14 +1037,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
 </section>
  
 
-    <!-- Gallery -->
-   
-    <!--//gallery -->
-    <!-- banner-bottom-w3ls1 -->
- 
 
-    <!--// banner-bottom-w3ls-->
-    <!--/testimonials-->
     <section class="testimonials py-5" id="testimonials" style="background:#000">
         <div class="container">
             <div class="header-wthree pb-lg-5 pb-3 text-center">
@@ -1101,24 +1133,28 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                 <h3 class="tittle mb-lg-3 mb-3" style="color:#fff !important"> Get In Touch</h3>
             </div>
             <div class="contact-form mx-auto text-left">
-                <form name="getInTouchForm" id="getInTouchForm" method="post" action="">
+                <form name="getInTouchForm" id="getInTouchForm" method="post" action="" >
                     <div class="row">
                         <div class="col-lg-4 con-gd">
                             <div class="form-group" data-aos="fade-up">
                                 <label style="color:#fff !important">Name *</label>
-                                <input type="text" class="form-control" id="name" placeholder="" name="name">
+                                <input type="text" class="form-control" id="queryName" placeholder="Name" name="name">
+                                <span id="queryNameError" style="color:red"></span>
                             </div>
                         </div>
                         <div class="col-lg-4 con-gd">
                             <div class="form-group" data-aos="fade-up">
                                 <label style="color:#fff !important">Email *</label>
-                                <input type="email" class="form-control" id="email" placeholder="" name="email">
+                                <input type="email" class="form-control" id="queryEmail" placeholder="Email" name="email">
+                                <span id="queryEmailError" style="color:red"></span>
+
                             </div>
                         </div>
                         <div class="col-lg-4 con-gd">
                             <div class="form-group" data-aos="fade-up">
                                 <label style="color:#fff !important">Phone No. *</label>
-                                <input type="text" class="form-control" id="phone" placeholder="" name="phone">
+                                <input type="text" class="form-control" id="queryPhone" placeholder="Mobile" name="phone">
+                                <span id="queryPhoneError" style="color:red"></span>
                             </div>
                         </div>
 
@@ -1127,17 +1163,15 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
                     <div class="form-group mb-5">
                         <label style="color:#fff !important">How can we help?</label>
                         <textarea name="issues" class="form-control" name="query" id="query" placeholder=""></textarea>
+                        <span id="queryError" style="color:red"></span>
                     </div>
                     <div class="contact-page">
-                        <button type="submit" class="btn btn-default" onclick="myFunction()">Submit</button>
+                        <button type="button" class="btn btn-default" onclick="myFunction()">Submit</button>
                         <p id="response-text" style="color:#fff !important;font-size:14px"></p>
                     </div>
                 </form>
             </div>
-            <!-- <div class="map my-md-5 my-3">
-
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d100949.24429313939!2d-122.44206553967531!3d37.75102885910819!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80859a6d00690021%3A0x4a501367f076adff!2sSan+Francisco%2C+CA%2C+USA!5e0!3m2!1sen!2sin!4v1472190196783" class="map" style="border:0" allowfullscreen=""></iframe> </div>
-        </div> -->
+       
 
     </section>
     <!-- //contact -->
@@ -1147,18 +1181,7 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
         <div class="container py-xl-5 py-lg-3">
             <div class="contact_grid_left">
                 <ul class="list-unstyled row text-left">
-                    <!-- <li class="col-lg-4 adress-info">
-                        <div class="row">
-                            <div class="col-md-3 text-lg-center adress-icon">
-                                <span class="fa fa-map-marker"></span>
-                            </div>
-                            <div class="col-md-9 text-left">
-                                <h6>Location</h6>
-                                <p>The company name
-                                    <br>New York City. </p>
-                            </div>
-                        </div>
-                    </li> -->
+                 
 
                     <li class="col-lg-4 adress-info">
                         <div class="row">
@@ -1208,21 +1231,13 @@ WILL THE CALL OF DESTINY CHANGE TRAILS OF LOVE?
 							<span class="fa fa-facebook-f"></span>
 						</a>
                     </li>
-                    <!-- <li class="mx-1">
-                        <a href="#">
-							<span class="fa fa-twitter"></span>
-						</a>
-                    </li> -->
+                  
                     <li>
                         <a href="https://www.instagram.com/writerabeer" target="_blank">
 							<span class="fa fa-instagram"></span>
 						</a>
                     </li>
-                    <!-- <li class="ml-1">
-                        <a href="#">
-							<span class="fa fa-vk"></span>
-						</a>
-                    </li> -->
+                 
                 </ul>
             </div>
             <!-- copyright -->
