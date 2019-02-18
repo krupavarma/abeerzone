@@ -251,7 +251,12 @@
               .catch(function(err) {
                 console.error(err);
                 var show = document.getElementById('successMessage');
-            show.innerHTML = err.statusMessage;
+                if(err.statusCode == 'CANCELED'){
+                    show.innerText = 'Unexpectedly Payment Failed';  
+                }
+                else{ 
+            show.innerText = err.statusMessage;
+                }
                 (function( window ) {
               $("#successModal").on("show", function() {   
                 $("#successModal a.btn").on("click", function(e) {
@@ -279,7 +284,7 @@
             this.shippingFunction();
             var show = document.getElementById('successMessage');
             // show.innerHTML=this.errorMsg.statusMessage;
-            show.innerHTML = "Payment Successfull.Book will be delivered to u r Address by Courier Service.For any queries contact our team";
+            show.innerHTML = "Payment Successfull.Book will be delivered to Your Address by Courier Service.For any queries contact our team";
               (function( window, undefined ) {
               $("#successModal").on("show", function() {   
         $("#successModal a.btn").on("click", function(e) {
